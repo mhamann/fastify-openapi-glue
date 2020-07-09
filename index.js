@@ -55,7 +55,13 @@ async function fastifyOpenapiGlue(instance, opts) {
     nullable: true
   });
 
-  instance.setSchemaCompiler(schema => ajv.compile(schema));
+  if (instance.setValidatorCompiler) {
+    // fastify v3.x
+    instance.setValidatorCompiler( ({ schema }) => ajv.compile(schema) );
+  } else {
+    // fastify v2.x
+    instance.setSchemaCompiler(schema => ajv.compile(schema));
+  }
 
   if (opts.prefix) {
     routeConf.prefix = opts.prefix;
